@@ -1,16 +1,27 @@
 import os
 
-
-base_dir = os.getenv('FILES_DIRECTORY')
-
-def save_file(file,extencion):
-    extension_dir = f'{base_dir}/{extencion}'
-    file_name = file.filename
+def get_name_files():
+    base_dir = os.getenv('FILES_DIRECTORY')
+    extension_list = list(os.getenv('ALLOWED_EXTENSIONS').split(','))
     list_files = []
-    for _,_,files in os.walk(extension_dir):
-        list_files.append(files)
+    for extension in extension_list:
+        extension_dir = f'{base_dir}/{extension}' 
+        for _,_,files in os.walk(extension_dir):
+            list_files.append(files)
+    return sum(list_files,[])
 
-    if file_name in list_files[0]:
+def get_files_filtred(extension_filter):
+    files = get_name_files()
+    files_filtred = [file for file in files if extension_filter in file]
+    return files_filtred
+
+def save_file(file,extension):
+    base_dir = os.getenv('FILES_DIRECTORY')
+    extension_dir = f'{base_dir}/{extension}'
+    file_name = file.filename
+    list_files = get_name_files()
+
+    if file_name in list_files:
         return ('Imagem com um nome ja existente no sistema,',409)
     else:
         file.save(f'{extension_dir}/{file_name}')
@@ -30,3 +41,10 @@ def upload(file):
         return (f'Arquivo maior que {max_size/1000000} MB', 413)
         
     return (f'Extensão .{extension} não é suportada', 415)
+
+
+def create_zip_by_extension(extension,radios):
+    base_dir = os.getenv('FILES_DIRECTORY')
+    extension_dir = f'{base_dir}/{extension}'
+    os.system(f'zip -{radios} -r {extension_dir}/{extension}.zip {extension_dir}')
+    return f'{extension}.zip'
