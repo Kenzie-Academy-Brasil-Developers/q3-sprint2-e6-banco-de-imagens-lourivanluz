@@ -1,10 +1,11 @@
 from flask import Flask,request,send_from_directory
-from kenzie import *
+from .kenzie import upload,get_files_filtred,get_name_files,create_zip_by_extension
+from dotenv import load_dotenv
 import os
 
 app = Flask(__name__)
-
-
+load_dotenv()
+#seek
 app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH'))
 
 base_dir = os.getenv('FILES_DIRECTORY')
@@ -32,7 +33,23 @@ def file_listed():
 
 @app.get('/files/<extension>')
 def files_filtred(extension):
-    return {'files': get_files_filtred(extension)},200
+    list_files = get_files_filtred(extension)
+    if list_files:
+        return {'files': list_files},200
+    return {'mensagem':'Extensão invalida'},404
+
+@app.get('/download/<file_name>')
+def download_file(file_name):
+    extension = file_name.split('.')[1]
+    file_name = file_name.split('.')[0]
+    try:
+        return send_from_directory(
+            directory= f'../{base_dir}/{extension}/',
+            path= file_name,
+            as_attachment=True
+        )
+    except:
+        return  {'mensagem':'Nome de arquivo inválido'},404
 
 @app.get('/download-zip')
 def download_zip():
@@ -41,14 +58,17 @@ def download_zip():
         radios = int(request.args.get('compression_ratio'))
         
         file = create_zip_by_extension(extension,radios)
-        return send_from_directory(
-            directory= f'../files_upload/{extension}/',
+        file_download = send_from_directory(
+            directory= f'../{base_dir}/{extension}/',
             path= file,
             as_attachment=True
         )
+
+        return file_download
     except:
+        mensagem = 'file_extension e compression_ratio necessarios'
         if radios<=1 and radios >=9:
-            return {'mensagem': 'compression_ratio deve ser um inteiro entre 1 e 9'},401
+            mensagem = 'compression_ratio deve ser um inteiro entre 1 e 9'
         if extension not in extension_list:
-            return {'mensagem': 'aplicasão não suporta essa extensão'},401
-        return {'mensagem': 'file_extension e compression_ratio necessarios'},401
+            mensagem ='aplicasão não suporta essa extensão'
+        return {'mensagem': mensagem},401
