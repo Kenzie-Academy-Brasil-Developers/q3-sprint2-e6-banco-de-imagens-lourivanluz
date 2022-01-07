@@ -24,7 +24,7 @@ def save_file(file,extension):
     if file_name in list_files:
         return ('Imagem com um nome ja existente no sistema,',409)
     else:
-        file.save(f'{extension_dir}/{file_name}')
+        file.save(f'{extension_dir}/{file.filename}')
         return ('Imagen salva',201)
         
 def upload(file):
@@ -32,9 +32,12 @@ def upload(file):
     extension_list = os.getenv('ALLOWED_EXTENSIONS').split(',')
     extension = file.filename.split('.')[-1]
     
+
     if extension in extension_list:
-        size = len(file.read())
-        if size<=max_size:
+        file.seek(0, os.SEEK_END)
+        file_length = file.tell()
+        #size = len(file.read())
+        if file_length<=max_size:
             mensagem = save_file(file,extension)
             return mensagem
 

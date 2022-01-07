@@ -29,6 +29,7 @@ def home():
 @app.post('/upload')
 def file_upload():
     file = request.files['file']
+    # "file": "<class 'werkzeug.datastructures.FileStorage'>"
     (mensagem,status) = upload(file)
     return {'mensagem': mensagem},status
 
@@ -46,7 +47,6 @@ def files_filtred(extension):
 @app.get('/download/<file_name>')
 def download_file(file_name):
     extension = file_name.split('.')[1]
-    file_name = file_name.split('.')[0]
     try:
         return send_from_directory(
             directory= f'../{base_dir}/{extension}/',
