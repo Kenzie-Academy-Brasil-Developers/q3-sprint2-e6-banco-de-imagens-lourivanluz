@@ -21,6 +21,11 @@ try:
 except:
     pass
 
+
+@app.get('/')
+def home():
+    return{'mensagem':'ta na home'},200
+
 @app.post('/upload')
 def file_upload():
     file = request.files['file']
@@ -63,7 +68,6 @@ def download_zip():
             path= file,
             as_attachment=True
         )
-
         return file_download
     except:
         mensagem = 'file_extension e compression_ratio necessarios'
