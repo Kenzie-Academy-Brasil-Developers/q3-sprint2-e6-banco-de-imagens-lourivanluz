@@ -32,11 +32,9 @@ def upload(file):
     extension_list = os.getenv('ALLOWED_EXTENSIONS').split(',')
     extension = file.filename.split('.')[-1]
     
-
     if extension in extension_list:
-        file.seek(0, os.SEEK_END)
-        file_length = file.tell()
-        #size = len(file.read())
+        file_length = len(file.read())
+        file.seek(0)
         if file_length<=max_size:
             mensagem = save_file(file,extension)
             return mensagem
