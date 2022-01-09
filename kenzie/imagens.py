@@ -47,5 +47,8 @@ def upload(file):
 def create_zip_by_extension(extension,radios):
     base_dir = os.getenv('FILES_DIRECTORY')
     extension_dir = f'{base_dir}/{extension}'
-    os.system(f'zip -{radios} -r {extension_dir}/{extension}.zip {extension_dir}')
-    return f'{extension}.zip'
+    files = ''.join(os.listdir(f'{base_dir}/{extension}'))
+    if files:
+        os.system(f'cd {extension_dir} ; zip -{radios} {extension}.zip *.png')
+        return f'{extension}.zip'
+    return ''

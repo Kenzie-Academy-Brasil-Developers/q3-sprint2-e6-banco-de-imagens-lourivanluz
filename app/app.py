@@ -1,11 +1,13 @@
+from dotenv.main import load_dotenv
 from flask import Flask,request,send_from_directory
 from kenzie import upload,get_files_filtred,get_name_files,create_zip_by_extension
-from dotenv import load_dotenv
+
 import os
 
 app = Flask(__name__)
+
 load_dotenv()
-#seek
+
 app.config['MAX_CONTENT_LENGTH'] = int(os.getenv('MAX_CONTENT_LENGTH'))
 
 base_dir = os.getenv('FILES_DIRECTORY')
@@ -49,7 +51,7 @@ def download_file(file_name):
     extension = file_name.split('.')[1]
     try:
         return send_from_directory(
-            directory= f'../{base_dir}/{extension}/',
+            directory= f'{base_dir}/{extension}/',
             path= file_name,
             as_attachment=True
         )
@@ -62,17 +64,17 @@ def download_zip():
         extension = request.args.get('file_extension')
         radios = int(request.args.get('compression_ratio'))
         
-        file = create_zip_by_extension(extension,radios)
-        file_download = send_from_directory(
-            directory= f'../{base_dir}/{extension}/',
-            path= file,
-            as_attachment=True
-        )
-        return file_download
+        response = create_zip_by_extension(extension,radios)
+        if response:
+            file_download = send_from_directory(
+                directory= f'{base_dir}/{extension}/',
+                path= response,
+                as_attachment=True
+            )
+            return file_download
+        return {'mensagem':'pasta vazia'},404
     except:
         mensagem = 'file_extension e compression_ratio necessarios'
-        if radios<=1 and radios >=9:
-            mensagem = 'compression_ratio deve ser um inteiro entre 1 e 9'
         if extension not in extension_list:
             mensagem ='aplicasão não suporta essa extensão'
-        return {'mensagem': mensagem},401
+        return {'mensagem': mensagem},404
