@@ -39,8 +39,8 @@ def file_listed():
 
 @app.get('/files/<extension>')
 def files_filtred(extension):
-    list_files = get_files_filtred(extension)
-    if list_files:
+    if extension in extension_list:
+        list_files = get_files_filtred(extension)
         return {'files': list_files},200
     return {'mensagem':'Extensão invalida'},404
 

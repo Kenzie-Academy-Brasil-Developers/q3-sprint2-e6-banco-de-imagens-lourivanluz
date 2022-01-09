@@ -40,4 +40,4 @@ def test_same_file_in_dir():
     response = client.post('/upload',data={'file':data},content_type='multipart/form-data')
     if 'kenzie.png' in os.listdir('/tmp/files_upload/png'):
         assert response.status_code == 409
-  
+    os.system('rm -rf /tmp/files_upload')
