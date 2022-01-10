@@ -49,6 +49,6 @@ def create_zip_by_extension(extension,radios):
     extension_dir = f'{base_dir}/{extension}'
     files = ''.join(os.listdir(f'{base_dir}/{extension}'))
     if files:
-        os.system(f'cd {extension_dir} ; zip -{radios} {extension}.zip *.png')
+        os.system(f'cd {extension_dir} ; zip -{radios} {extension}.zip *.{extension}')
         return f'{extension}.zip'
     return ''
