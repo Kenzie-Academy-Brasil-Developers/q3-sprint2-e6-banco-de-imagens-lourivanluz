@@ -71,6 +71,7 @@ def download_zip():
                 path= response,
                 as_attachment=True
             )
+            os.system(f'rm /tmp/files_upload/{extension}/{extension}.zip')
             return file_download
         return {'mensagem':'pasta vazia'},404
     except:
